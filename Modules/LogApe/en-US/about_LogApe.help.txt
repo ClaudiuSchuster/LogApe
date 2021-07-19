@@ -1,0 +1,35 @@
+TOPIC
+    About LogApe module
+
+SHORT DESCRIPTION
+    LogApe - Provides advanced logging functionalities with ease of use
+
+LONG DESCRIPTION
+    Provides advanced ease of use logging functions
+
+    e.g.
+        - (Multi-)Colors in Pipelines & Shells
+        - An easy interface for Azure Pipelines Logging Commands (Vso* Methods)
+        - An easy interface for Progress cmdlets
+        - Additional LogFile Output
+        - etc.
+
+    Take a look at thr Test-Pipeline for some examples.
+
+EXAMPLES
+    EXAMPLE
+        Import-Module LogApe
+        Imports the module to current session if not already imported.
+        Note: This can be omitted as PowerShell will autoload the module on the first usage of any module cmdlet.
+    EXAMPLE
+        Import-Module LogApe -ArgumentList $true
+        Imports the module with enabled debug messages to current session, if not already imported.
+    EXAMPLE
+        Import-Module LogApe -ArgumentList $true -Force
+        Imports the module with enabled debug messages to current session, even if already imported.
+    EXAMPLE
+        Import-Module LogApe -ArgumentList $false $true
+        Imports the module and supresses all stdout output (if not already imported, not supressing Vso* Methods).
+    EXAMPLE
+        Import-Module LogApe -ArgumentList $false $true -Force
+        Imports the module and supresses all stdout output (even if already imported, not supressing Vso* Methods).

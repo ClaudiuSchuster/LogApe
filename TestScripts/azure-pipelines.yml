@@ -1,0 +1,86 @@
+# Pipeline: azure-pipelines.yml
+
+parameters:
+- name: DEBUG__SCRIPT
+  displayName: '[DEBUG] Script'
+  type: boolean
+  default: true
+- name: DEBUG__MODULES
+  displayName: '[DEBUG] Modules'
+  type: boolean
+  default: false
+- name: DEBUG__SYSTEM
+  displayName: '[DEBUG] System'
+  type: boolean
+  default: false
+
+variables:
+- name: System.Debug
+  value: ${{ parameters.DEBUG__SYSTEM }}
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - TestScripts/*
+
+pool: Power Shell Runner
+
+resources:
+  repositories:
+  - repository: Templates_Pipeline
+    type: git
+    name: Infrastructure/Templates_Pipeline
+
+jobs:
+
+- job: prerequisites
+  displayName: Prerequisites
+  steps:
+  - template: /pipeline/build/pipeline-template-step-install-update-psmodule.yml@Templates_Pipeline
+    parameters:
+      ModuleName:
+      - LogApe
+
+- job: LogApe_Test
+  dependsOn: prerequisites
+  displayName: LogApe Tests
+  steps:
+
+  - pwsh: |
+      # Import-Module and set DEBUG__MODULES
+      Import-Module LogApe -ArgumentList ([bool]::TrueString -eq '${{ parameters.DEBUG__MODULES }}')
+
+      # Initialize Log-Instance and set DEBUG__SCRIPT
+      $l = New-LogApe -D:([bool]::TrueString -eq '${{ parameters.DEBUG__SCRIPT }}')
+
+      # Some Log-Lines ...
+      $l.Log("Hello World!")
+      $l.LogDebug("Hello Debug World!")
+
+      (New-LogApe).VsoLog("Hello World!", 'command')
+    displayName: LogApe Test
+    continueOnError: true
+
+  - pwsh: |
+      $scriptPath = "./TestScripts/MultiColorOutput.ps1"
+      (New-LogApe).VsoLog($scriptPath, 'command')
+      & $scriptPath
+    displayName: LogApe MultiColorOutput Test
+    continueOnError: true
+
+  - pwsh: |
+      $file = "$(Agent.TempDirectory)\foo.txt"
+      Write-Output "Hello World!" > $file
+      (New-LogApe).VsoUploadArtifact($file, 'foo1')
+    displayName: LogApe VsoUploadArtifact Test
+    continueOnError: true
+
+  - pwsh: |
+      $file = "$(Agent.TempDirectory)\foo.txt"
+      Write-Output "Hello World!" > $file
+      (New-LogApe).VsoUploadArtifact($file, 'foo2', "logs\tool")
+    displayName: LogApe VsoUploadArtifact (To Sub-Folders) Test
+    continueOnError: true

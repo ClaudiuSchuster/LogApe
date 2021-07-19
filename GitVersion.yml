@@ -1,0 +1,7 @@
+assembly-versioning-scheme: MajorMinorPatchTag
+assembly-file-versioning-scheme: MajorMinorPatchTag
+assembly-informational-format: '{FullSemVer}'
+mode: Mainline
+branches: {}
+ignore:
+  sha: []

@@ -1,0 +1,19 @@
+# Pipeline: deploy-modules.yml
+
+trigger:
+  branches:
+    include:
+    - master
+    - function/*
+  paths:
+    include:
+    - Modules/*
+
+resources:
+  repositories:
+  - repository: Templates_Pipeline
+    type: git
+    name: Infrastructure/Templates_Pipeline
+
+jobs:
+- template: /pipeline/build/pipeline-template-job-deploy-psmodules.yml@Templates_Pipeline

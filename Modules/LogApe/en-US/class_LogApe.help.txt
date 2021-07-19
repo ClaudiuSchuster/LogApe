@@ -1,0 +1,87 @@
+TOPIC
+    About [LogApe] class
+
+SHORT DESCRIPTION
+    Object based [LogApe] interface - Provides advanced logging functionalities with ease of use
+
+LONG DESCRIPTION
+    - After creation of an class-instance with the New-LogApe cmdlet the visible class-methods
+      will be available and can be used for easy but advanced logging purposes.
+    - The initialization of the instance with a configuration is optional, but can be done
+      by a JSON-file, PSData-file or by a inline hashtable or JSON string.
+    - All configuration options returned by the GetConfig class-method can be merged back to
+      the running-configuration with the SetConfig class-method.
+      The whole instance configuration can be merged at once, or partially step by step by the SetConfig method.
+    - LogApe does use $global:ModuleDebugMessages to print internal module debug messages.
+    - If 'Parent' is set with the initialization parameter or at configuration,
+      the [string]Parent will be used as Msg-Trailing encapsulated in [ ]
+
+    <# Default Configuration for LogApe Class/Module #>
+    @{
+        DateCulture          = 'en-CA'
+        MsecLog              = $true
+        Debug                = $false
+        LogFile              = $null
+        Parent               = $null
+        ParentColor          = $null
+        ErrorLevelMsgMapping = $null
+    }
+
+EXAMPLES
+    EXAMPLE
+        $l = New-LogApe
+        Inits a new LogApe instance without configuration (with default configuration).
+    EXAMPLE
+        $l = New-LogApe -PSDataFile '.\LogApeTestConfig.psd1'
+        Inits a new LogApe instance using PowerShellDataFile for configuration.
+    EXAMPLE
+        $l = New-LogApe -JsonFile '.\LogApeTestConfig.json'
+        Inits a new LogApe instance using JsonFile for configuration.
+    EXAMPLE
+        $l = New-LogApe @{ Parent = "vSphereClass" } }
+        Inits a new LogApe instance using inline Hashtable for configuration.
+    EXAMPLE
+        $l = New-LogApe '{ "Parent" : "vSphereClass" } }'
+        Inits a new LogApe instance using inline JSON for configuration.
+    EXAMPLE
+        $l.GetConfig();
+        Returns the configuration of the $l instance/object as Hashtable.
+    EXAMPLE
+        $l.GetConfig($true);
+        Returns the configuration of the $l instance/object as JSON with short-json formatting.
+    EXAMPLE
+        $l.GetConfig($true) | ConvertTo-Json;
+        Another way to return the configuration of the $l instance/object as JSON with default formatting.
+    EXAMPLE
+        $l.SetConfigFromJsonFile('.\LogApeTestConfig.json');
+        Modifying the instance configuration using a JSON-File.
+    EXAMPLE
+        $l.SetConfigFromPSDataFile('.\LogApeTestConfig.psd1');
+        Modifying the instance configuration using a PSD1-File.
+    EXAMPLE
+        $l.SetConfig('{ "Parent" : "vSphereClass" }');
+        Modifying the instance configuration by inline JSON.
+    EXAMPLE
+        $l.SetConfig(@{ Parent = "vSphereClass" });
+        Modifying the instance configuration by inline Hashtable.
+    EXAMPLE
+        $l.SetConfig(@{ Debug = $true });
+        Enable Module Debug Messages
+    EXAMPLE
+        $l.SetConfig(@{ ForceDateCulture = "vSphereClass" });
+        Force ForceDateCulture to 'de-DE'
+    EXAMPLE
+        $l.SetConfig(@{ ForceTextCulture = "de-DE" });
+        Force TestCulture to 'de-DE'
+    EXAMPLE
+        $l.SetConfig(@{ LogFile = "C:\temp\log.txt" });
+        Set Path to Logfile (Output will be Printed to Screen & To LogFile)
+    EXAMPLE
+        $l.SetConfig(@{ MsecLog = $false });
+        Disable Milliseconds Logging
+    EXAMPLE
+        $l.SetConfig(@{ Parent = "vSphereClass" });
+        Set Parent as Msg-Trailing (in [] encapsulated)
+    EXAMPLE
+        $l = New-LogApe; $l.Log("Hello World!"); $l.LogNote("Hello Green World!");
+        Full LogApe Usage Example.
