@@ -8,7 +8,7 @@ $l = New-LogApe
 ```
 to Create a Module Instance
 
-Use the in Release-Documentation-File LogApe.<version>.documentation.html documented public class methods
+Use the in Release-Documentation-File LogApe.[version].documentation.html documented public class methods
 ```javascript
 $l.LogInfo("Hello World!")
 $l.LogNote("Hello Green World!")
