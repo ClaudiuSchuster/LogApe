@@ -230,7 +230,7 @@ class LogApe {
     [LogApe] NewLinePre() { return $this.NewLinePre(1) }
     [LogApe] NewLinePre([int]$Count) { for ($i = 1; $i -le $Count; $i++) { Write-Host '' }; return $this; }
 
-    
+
     ### Public Instance Progress Methods
     # Set (Start or Update) a Progress
     [void] SetProgress([int]$Progress, [int]$TotalProgress, [string]$Action, [string]$Name) {
@@ -335,6 +335,23 @@ class LogApe {
                 + "$($ContainerFolder ? "containerfolder=$ContainerFolder;" : '')" `
                 + "artifactname=$ArtifactName;" `
                 + "]$Artifact"
+        )
+    }
+    # Upload a [string] as an artifact, and optionally publish the file into a file container folder
+    [void] VsoUploadStringAsArtifact([string]$ArtifactContent, [string]$Filename, [string]$ArtifactName) { $this.VsoUploadStringAsArtifact($Artifact, $Filename, $ArtifactName, $null) }
+    [void] VsoUploadStringAsArtifact([string]$ArtifactContent, [string]$Filename, [string]$ArtifactName, [string]$ContainerFolder) {
+        $tmpPath = (Test-Path $env:TEMP) ? $env:TEMP : (Test-Path '/tmp/') ? '/tmp' : (& { throw 'No Temp Path found!' })
+        Get-ChildItem -Path "$($env:TEMP)/LogApe_tempArtiContent_*" | Where-Object {
+            $_.LastAccessTime -lt (Get-Date).AddHours(-3)
+        } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        $tmpPath = Join-Path $tmpPath ('LogApe_tempArtiContent_' + [int](Get-Date -UFormat %s) + '_' + (Get-Random))
+        New-Item -ItemType Directory -Path $tmpPath -ErrorAction Stop | Out-Null
+        $tmpPath = Join-Path $tmpPath $Filename
+        $ArtifactContent | Out-File -FilePath $tmpPath
+        Write-Host ( "##vso[artifact.upload " `
+                + "$($ContainerFolder ? "containerfolder=$ContainerFolder;" : '')" `
+                + "artifactname=$ArtifactName;" `
+                + "]$tmpPath"
         )
     }
     # Upload and attach attachment to current timeline record. These files are not available for download with logs.
